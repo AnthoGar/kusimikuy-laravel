@@ -26,7 +26,7 @@ class AceptarSolicitudRescate
                 );
             }
 
-            $lote = LoteAlimento::where('id', $solicitud->lot_id)
+            $lote = LoteAlimento::whereKey($solicitud->lot_id)
                 ->lockForUpdate()
                 ->firstOrFail();
 
