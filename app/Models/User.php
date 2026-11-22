@@ -68,7 +68,7 @@ class User extends Authenticatable
     public function traslados(): BelongsToMany
     {
         return $this->belongsToMany(Traslado::class, 'traslado_user')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
     public function entregasRecibidas(): HasMany
     {
