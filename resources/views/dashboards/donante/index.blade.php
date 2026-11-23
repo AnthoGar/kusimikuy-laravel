@@ -13,13 +13,40 @@
     </p>
 </div>
 
-<section class="dashboard-section">
-    <h2>Resumen de actividad</h2>
+<section class="dashboard-stats">
 
-    <p>
-        Aquí podrás consultar tus lotes publicados,
-        solicitudes recibidas y entregas realizadas.
-    </p>
+    <article class="dashboard-stat-card">
+        <span class="dashboard-stat-label">Lotes publicados</span>
+        <strong>{{ $totalLotes }}</strong>
+        <span class="dashboard-stat-description">
+            Total de lotes registrados
+        </span>
+    </article>
+
+    <article class="dashboard-stat-card">
+        <span class="dashboard-stat-label">Solicitudes pendientes</span>
+        <strong>{{ $solicitudesPendientes }}</strong>
+        <span class="dashboard-stat-description">
+            Esperando tu respuesta
+        </span>
+    </article>
+
+    <article class="dashboard-stat-card">
+        <span class="dashboard-stat-label">Entregas completadas</span>
+        <strong>{{ $entregasCompletadas }}</strong>
+        <span class="dashboard-stat-description">
+            Alimentos entregados
+        </span>
+    </article>
+
+    <article class="dashboard-stat-card">
+        <span class="dashboard-stat-label">Kilogramos rescatados</span>
+        <strong>{{ number_format($kgRescatados, 2) }} kg</strong>
+        <span class="dashboard-stat-description">
+            Cantidad efectivamente recibida
+        </span>
+    </article>
+
 </section>
 
 @endsection
