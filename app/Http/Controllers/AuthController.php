@@ -24,14 +24,11 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        // 1. Validar los datos recibidos.
         $datos = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',
             'phone' => 'nullable|string|max:20',
-
             'password' => 'required|string|min:8|confirmed',
-
             'account_type' => 'required|in:donante,comedor',
 
             // Campos exclusivos de los comedores.
@@ -43,14 +40,9 @@ class AuthController extends Controller
             'nombre_contacto' => 'nullable|string|max:150',
         ]);
 
-        // 2. Buscar el rol permitido.
-        $rol = Role::where('slug', $datos['account_type'])
-            ->firstOrFail();
+        $rol = Role::where('slug', $datos['account_type'])->firstOrFail();
 
-        // 3. Crear los registros dentro de una transacción.
         $usuario = DB::transaction(function () use ($datos, $rol) {
-
-            // Crear el usuario.
             $usuario = User::create([
                 'name' => $datos['name'],
                 'email' => $datos['email'],
@@ -60,36 +52,29 @@ class AuthController extends Controller
                 'is_active' => true,
             ]);
 
-            // Si es un comedor, crear su información adicional.
             if ($rol->slug === 'comedor') {
-
                 ComedorPopular::create([
                     'user_id' => $usuario->id,
                     'nombre' => $datos['nombre'],
                     'direccion' => $datos['direccion'],
                     'distrito' => $datos['distrito'],
                     'raciones_diarias' => $datos['raciones_diarias'],
-                    'tiene_refrigeracion' =>
-                    $datos['tiene_refrigeracion'] ?? false,
-                    'nombre_contacto' =>
-                    $datos['nombre_contacto'] ?? null,
+                    'tiene_refrigeracion' => $datos['tiene_refrigeracion'] ?? false,
+                    'nombre_contacto' => $datos['nombre_contacto'] ?? null,
                 ]);
             }
 
             return $usuario;
         });
 
-        // 4. Iniciar sesión automáticamente.
         Auth::login($usuario);
-
-        // Regenerar la sesión por seguridad.
         $request->session()->regenerate();
 
         return redirect()
-            ->route('home')
+            ->route($this->dashboardRouteFor($usuario))
             ->with('success', '¡Tu cuenta ha sido creada correctamente!');
     }
-    
+
     public function showLogin()
     {
         return view('auth.login');
@@ -102,13 +87,9 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        // Solo permitimos iniciar sesión a cuentas activas.
         $credenciales['is_active'] = true;
 
-        if (!Auth::attempt(
-            $credenciales,
-            $request->boolean('remember')
-        )) {
+        if (!Auth::attempt($credenciales, $request->boolean('remember'))) {
             return back()
                 ->withErrors([
                     'email' => 'Las credenciales son incorrectas o la cuenta está inactiva.',
@@ -116,10 +97,12 @@ class AuthController extends Controller
                 ->onlyInput('email');
         }
 
-        // Regeneramos la sesión para prevenir ataques de fijación de sesión.
         $request->session()->regenerate();
 
-        return redirect()->intended(route('home'))
+        $usuario = Auth::user()->load('role');
+
+        return redirect()
+            ->intended(route($this->dashboardRouteFor($usuario)))
             ->with('success', '¡Bienvenido nuevamente a KusiMikuy!');
     }
 
@@ -132,5 +115,16 @@ class AuthController extends Controller
 
         return redirect()->route('home')
             ->with('success', 'Has cerrado sesión correctamente.');
+    }
+
+    private function dashboardRouteFor(User $user): string
+    {
+        return match ($user->role?->slug) {
+            'donante' => 'donante.dashboard',
+            'comedor' => 'comedor.dashboard',
+            'colaborador' => 'colaborador.dashboard',
+            'administrador' => 'admin.dashboard',
+            default => 'home',
+        };
     }
 }
