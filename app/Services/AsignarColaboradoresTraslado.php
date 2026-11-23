@@ -24,6 +24,13 @@ class AsignarColaboradoresTraslado
                 ->lockForUpdate()
                 ->firstOrFail();
 
+            // Solo permitir asignaciones en traslados pendientes.
+            if ($traslado->estado !== 'pendiente') {
+                throw new RuntimeException(
+                    'Solo se pueden asignar colaboradores a traslados pendientes.'
+                );
+            }
+
             // Evitar una asignación vacía.
             if (empty($colaboradoresIds)) {
                 throw new RuntimeException(
@@ -32,7 +39,9 @@ class AsignarColaboradoresTraslado
             }
 
             // Eliminar identificadores repetidos.
-            $colaboradoresIds = array_unique($colaboradoresIds);
+            $colaboradoresIds = array_values(
+                array_unique($colaboradoresIds)
+            );
 
             // Buscar los colaboradores seleccionados.
             $colaboradores = User::whereIn('id', $colaboradoresIds)
