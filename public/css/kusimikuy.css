@@ -730,3 +730,172 @@ p {
         padding-left: 0;
     }
 }
+
+/*REGISTRO - KUSIMIKUY */
+.register-section {
+    background: #F1EDE2;
+    min-height: 100vh;
+    padding: 65px 20px 80px;
+}
+
+.register-container {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.register-heading {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.register-eyebrow {
+    color: #B46A45;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.register-heading h1 {
+    color: #244A36;
+    font-size: clamp(30px, 5vw, 42px);
+    margin: 12px 0;
+}
+
+.register-heading p {
+    color: #62675F;
+    line-height: 1.7;
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+.register-card {
+    background: #FFFFFF;
+    padding: 40px;
+    border-radius: 18px;
+    box-shadow: 0 12px 40px rgba(36, 74, 54, 0.08);
+}
+
+.register-group {
+    margin-bottom: 35px;
+}
+
+.register-group + .register-group {
+    border-top: 1px solid #E9E9E2;
+    padding-top: 28px;
+}
+
+.register-group h2 {
+    color: #244A36;
+    font-size: 19px;
+    margin-bottom: 6px;
+}
+
+.register-group p {
+    color: #858980;
+    font-size: 14px;
+    margin-bottom: 22px;
+}
+
+.register-field {
+    margin-bottom: 20px;
+}
+
+.register-field label {
+    display: block;
+    color: #292C28;
+    font-size: 14px;
+    font-weight: 650;
+    margin-bottom: 8px;
+}
+
+.register-field label span {
+    color: #999D95;
+    font-weight: 400;
+}
+
+.register-field input,
+.register-field select {
+    width: 100%;
+    padding: 13px 15px;
+    border: 1px solid #DADDD5;
+    border-radius: 9px;
+    background: #FFFFFF;
+    color: #292C28;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.register-field input:focus,
+.register-field select:focus {
+    border-color: #55745A;
+    box-shadow: 0 0 0 3px rgba(85, 116, 90, 0.12);
+}
+
+.register-field input::placeholder {
+    color: #A4A79F;
+}
+
+.register-button {
+    width: 100%;
+    border: none;
+    border-radius: 9px;
+    padding: 15px 20px;
+    background: #244A36;
+    color: #FFFFFF;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.register-button:hover {
+    background: #55745A;
+    transform: translateY(-2px);
+}
+
+.register-login {
+    text-align: center;
+    color: #777D73;
+    font-size: 14px;
+    margin: 22px 0 0;
+}
+
+.register-login a {
+    color: #244A36;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.register-login a:hover {
+    text-decoration: underline;
+}
+
+.register-alert {
+    background: #FFF0EA;
+    border: 1px solid #E8C3B2;
+    border-radius: 9px;
+    color: #8A452D;
+    padding: 15px 20px;
+    margin-bottom: 25px;
+    font-size: 14px;
+}
+
+.register-alert ul {
+    margin: 8px 0 0;
+    padding-left: 20px;
+}
+
+@media (max-width: 600px) {
+    .register-section {
+        padding: 40px 15px;
+    }
+
+    .register-card {
+        padding: 25px 20px;
+    }
+
+    .register-heading h1 {
+        font-size: 30px;
+    }
+}
