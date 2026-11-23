@@ -70,9 +70,9 @@ class AuthController extends Controller
                     'distrito' => $datos['distrito'],
                     'raciones_diarias' => $datos['raciones_diarias'],
                     'tiene_refrigeracion' =>
-                        $datos['tiene_refrigeracion'] ?? false,
+                    $datos['tiene_refrigeracion'] ?? false,
                     'nombre_contacto' =>
-                        $datos['nombre_contacto'] ?? null,
+                    $datos['nombre_contacto'] ?? null,
                 ]);
             }
 
@@ -88,5 +88,49 @@ class AuthController extends Controller
         return redirect()
             ->route('home')
             ->with('success', '¡Tu cuenta ha sido creada correctamente!');
+    }
+    
+    public function showLogin()
+    {
+        return view('auth.login');
+    }
+
+    public function login(Request $request)
+    {
+        $credenciales = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        // Solo permitimos iniciar sesión a cuentas activas.
+        $credenciales['is_active'] = true;
+
+        if (!Auth::attempt(
+            $credenciales,
+            $request->boolean('remember')
+        )) {
+            return back()
+                ->withErrors([
+                    'email' => 'Las credenciales son incorrectas o la cuenta está inactiva.',
+                ])
+                ->onlyInput('email');
+        }
+
+        // Regeneramos la sesión para prevenir ataques de fijación de sesión.
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('home'))
+            ->with('success', '¡Bienvenido nuevamente a KusiMikuy!');
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('home')
+            ->with('success', 'Has cerrado sesión correctamente.');
     }
 }

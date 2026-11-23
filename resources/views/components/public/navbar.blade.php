@@ -19,21 +19,41 @@
         </button>
 
         <div class="nav-content" id="main-menu">
+
             <div class="nav-links">
-                <a href="#proposito">Nuestro propósito</a>
-                <a href="#como-funciona">Cómo funciona</a>
-                <a href="#comunidad">Comunidad</a>
-                <a href="#impacto">Impacto</a>
+                <a href="{{ url('/#proposito') }}">Nuestro propósito</a>
+                <a href="{{ url('/#como-funciona') }}">Cómo funciona</a>
+                <a href="{{ url('/#comunidad') }}">Comunidad</a>
+                <a href="{{ url('/#impacto') }}">Impacto</a>
             </div>
 
             <div class="nav-actions">
-                <a href="#comunidad" class="nav-login">
+
+                @guest
+                {{-- Opciones para visitantes --}}
+                <a href="{{ route('login') }}" class="nav-login">
                     Iniciar sesión
                 </a>
 
-                <a href="#comunidad" class="btn btn-primary">
+                <a href="{{ route('register') }}" class="btn btn-primary">
                     Únete ahora
                 </a>
+                @endguest
+
+                @auth
+                {{-- Opciones para usuarios autenticados --}}
+                <span class="nav-user">
+                    Hola, {{ auth()->user()->name }}
+                </span>
+
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="nav-login">
+                        Cerrar sesión
+                    </button>
+                </form>
+                @endauth
+
             </div>
         </div>
 
