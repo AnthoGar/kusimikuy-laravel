@@ -73,6 +73,13 @@ class RegistrarEntrega
                 );
             }
 
+            if (round($cantidadRecibidaKg, 2) != $cantidadRecibidaKg) {
+                throw new InvalidArgumentException(
+                    'La cantidad recibida debe tener como máximo dos decimales.'
+                    
+                );
+            }
+
             // Verificar la calificación.
             if (
                 $calificacionCalidad !== null &&
@@ -97,11 +104,24 @@ class RegistrarEntrega
 
             $esResponsableDelComedor =
                 $usuario->role?->slug === 'comedor' &&
-                $solicitud->comedor->user_id === $usuario->id;
+                $solicitud->comedor !== null &&
+                (int) $solicitud->comedor->user_id === $usuario->id;
 
             if (!$esAdministrador && !$esResponsableDelComedor) {
                 throw new AuthorizationException(
                     'No tienes autorización para confirmar esta entrega.'
+                );
+            }
+
+            $estadosPermitidos = [
+                'bueno',
+                'regular',
+                'malo',
+            ];
+
+            if (!in_array($estadoConservacion, $estadosPermitidos, true)) {
+                throw new InvalidArgumentException(
+                    'El estado de conservación no es válido.'
                 );
             }
 
