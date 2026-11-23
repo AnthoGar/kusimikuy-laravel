@@ -1025,6 +1025,43 @@ p {
     gap: 8px;
 }
 
+.dashboard-nav-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+.dashboard-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    color: #475569;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dashboard-nav-link:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
+
+.dashboard-nav-link.active {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    font-weight: 600;
+}
+
+.dashboard-nav-link span {
+    display: inline-flex;
+    width: 20px;
+    justify-content: center;
+}
+
 .dashboard-nav-link {
     display: flex;
     align-items: center;
