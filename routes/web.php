@@ -48,4 +48,10 @@ Route::middleware(['auth', 'role:donante'])->group(function () {
 
     Route::put('/donante/lotes/{lote}', [LoteAlimentoController::class, 'update'])
     ->name('donante.lotes.update');
+
+    Route::patch('/donante/lotes/{lote}/pausar', [LoteAlimentoController::class, 'pausar'])
+    ->name('donante.lotes.pausar');
+
+    Route::patch('/donante/lotes/{lote}/reactivar', [LoteAlimentoController::class, 'reactivar'])
+    ->name('donante.lotes.reactivar');
 });

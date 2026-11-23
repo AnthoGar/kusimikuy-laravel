@@ -202,4 +202,87 @@ class LoteAlimentoController extends Controller
             ->route('donante.lotes.index')
             ->with('success', '¡El lote se actualizó correctamente!');
     }
+
+    public function pausar(Request $request, LoteAlimento $lote)
+    {
+        abort_unless(
+            $lote->donor_id === $request->user()->id,
+            403,
+            'No tienes permiso para modificar este lote.'
+        );
+
+        DB::transaction(function () use ($request, $lote) {
+            $loteActual = LoteAlimento::whereKey($lote->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($loteActual->donor_id !== $request->user()->id) {
+                abort(403);
+            }
+
+            if ($loteActual->estado !== 'disponible') {
+                throw ValidationException::withMessages([
+                    'estado' => 'Solo puedes pausar lotes disponibles.',
+                ]);
+            }
+
+            $loteActual->update([
+                'estado' => 'pausado',
+            ]);
+        });
+
+        return redirect()
+            ->route('donante.lotes.index')
+            ->with('success', 'El lote se pausó correctamente.');
+    }
+
+    public function reactivar(Request $request, LoteAlimento $lote)
+    {
+        abort_unless(
+            $lote->donor_id === $request->user()->id,
+            403,
+            'No tienes permiso para modificar este lote.'
+        );
+
+        DB::transaction(function () use ($request, $lote) {
+            $loteActual = LoteAlimento::whereKey($lote->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($loteActual->donor_id !== $request->user()->id) {
+                abort(403);
+            }
+
+            if ($loteActual->estado !== 'pausado') {
+                throw ValidationException::withMessages([
+                    'estado' => 'Solo puedes reactivar lotes pausados.',
+                ]);
+            }
+
+            if ((float) $loteActual->disponible_kg <= 0) {
+                throw ValidationException::withMessages([
+                    'estado' => 'No puedes reactivar un lote sin cantidad disponible.',
+                ]);
+            }
+
+            if (
+                !$loteActual->expiracion ||
+                !$loteActual->recojo_maximo ||
+                $loteActual->expiracion->isPast() ||
+                $loteActual->recojo_maximo->isPast()
+            ) {
+                throw ValidationException::withMessages([
+                    'estado' => 'No puedes reactivar un lote cuyas fechas límite ya pasaron.',
+                ]);
+            }
+
+            $loteActual->update([
+                'estado' => 'disponible',
+            ]);
+        });
+
+        return redirect()
+            ->route('donante.lotes.index')
+            ->with('success', 'El lote se reactivó correctamente.');
+    }
 }

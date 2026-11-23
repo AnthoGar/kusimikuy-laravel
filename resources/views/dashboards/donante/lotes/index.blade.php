@@ -73,6 +73,43 @@
                 </span>
             </div>
 
+            <div class="lote-actions">
+
+                <a
+                    href="{{ route('donante.lotes.edit', $lote) }}"
+                    class="btn-secondary">
+                    Editar lote
+                </a>
+
+                @if ($lote->estado === 'disponible')
+                <form
+                    action="{{ route('donante.lotes.pausar', $lote) }}"
+                    method="POST"
+                    onsubmit="return confirm('¿Estás seguro de pausar este lote?')">
+                    @csrf
+                    @method('PATCH')
+
+                    <button type="submit" class="btn-secondary">
+                        Pausar lote
+                    </button>
+                </form>
+
+                @elseif ($lote->estado === 'pausado')
+                <form
+                    action="{{ route('donante.lotes.reactivar', $lote) }}"
+                    method="POST"
+                    onsubmit="return confirm('¿Deseas reactivar este lote?')">
+                    @csrf
+                    @method('PATCH')
+
+                    <button type="submit" class="btn-primary">
+                        Reactivar lote
+                    </button>
+                </form>
+                @endif
+
+            </div>
+
         </div>
 
     </article>
