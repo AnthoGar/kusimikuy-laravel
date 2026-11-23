@@ -1,90 +1,47 @@
-<!DOCTYPE html>
-<html lang="es">
+<nav class="dashboard-navigation">
+    <span class="dashboard-nav-title">MENÚ PRINCIPAL</span>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @php $slug = auth()->user()->role?->slug; @endphp
 
-    <meta name="description" content="Panel de gestión de KusiMikuy.">
-
-    <title>@yield('title', 'Panel | KusiMikuy')</title>
-
-    <link rel="icon" href="{{ asset('img/logo.jpg') }}" type="image/jpeg">
-    <link rel="stylesheet" href="{{ asset('css/kusimikuy.css') }}">
-
-    @stack('styles')
-</head>
-
-<body class="dashboard-body">
-
-    <div class="dashboard-layout">
-
-        {{-- Barra lateral --}}
-        <aside class="dashboard-sidebar">
-
-            <a href="{{ route('home') }}" class="dashboard-brand">
-                <img src="{{ asset('img/logo.jpg') }}" alt="KusiMikuy">
-                <span>KusiMikuy</span>
-            </a>
-
-            <div class="dashboard-user">
-                <span class="dashboard-user-name">
-                    {{ auth()->user()->name }}
-                </span>
-
-                <span class="dashboard-user-role">
-                    {{ auth()->user()->role?->name }}
-                </span>
-            </div>
-
-            <nav class="dashboard-navigation">
-
-                <span class="dashboard-nav-title">MENÚ PRINCIPAL</span>
-
-                @if (auth()->user()->role?->slug === 'donante')
-                <a href="{{ route('donante.dashboard') }}"
-                    class="dashboard-nav-link active">
-                    <span>⌂</span>
-                    Mi panel
-                </a>
-                @endif
-
-            </nav>
-
-            <div class="dashboard-sidebar-footer">
-                <a href="{{ route('home') }}" class="dashboard-nav-link">
-                    Volver al sitio web
-                </a>
-
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="dashboard-logout">
-                        Cerrar sesión
-                    </button>
-                </form>
-            </div>
-
-        </aside>
-
-        {{-- Contenido principal --}}
-        <div class="dashboard-main">
-
-            <header class="dashboard-topbar">
-                <span>Plataforma de gestión</span>
-                <span>{{ auth()->user()->name }}</span>
-            </header>
-
-            <main class="dashboard-content">
-                @yield('content')
-            </main>
-
-        </div>
-
-    </div>
-
-    <script src="{{ asset('js/kusimikuy.js') }}" defer></script>
-    @stack('scripts')
-
-</body>
-
-</html>
+    @if ($slug === 'donante')
+        <a href="{{ route('donante.dashboard') }}" class="dashboard-nav-link {{ request()->routeIs('donante.dashboard') ? 'active' : '' }}">
+            <span>⌂</span> Mi panel
+        </a>
+        <a href="{{ route('donante.lotes.index') }}" class="dashboard-nav-link {{ request()->routeIs('donante.lotes.*') ? 'active' : '' }}">
+            <span>▤</span> Mis lotes
+        </a>
+        <a href="{{ route('donante.solicitudes.index') }}" class="dashboard-nav-link {{ request()->routeIs('donante.solicitudes.*') ? 'active' : '' }}">
+            <span>✓</span> Solicitudes recibidas
+        </a>
+    @elseif ($slug === 'comedor')
+        <a href="{{ route('comedor.dashboard') }}" class="dashboard-nav-link {{ request()->routeIs('comedor.dashboard') ? 'active' : '' }}">
+            <span>⌂</span> Mi panel
+        </a>
+        <a href="{{ route('comedor.catalogo') }}" class="dashboard-nav-link {{ request()->routeIs('comedor.catalogo') ? 'active' : '' }}">
+            <span>◈</span> Alimentos disponibles
+        </a>
+        <a href="{{ route('comedor.solicitudes.index') }}" class="dashboard-nav-link {{ request()->routeIs('comedor.solicitudes.*') ? 'active' : '' }}">
+            <span>✓</span> Mis rescates y entregas
+        </a>
+        <a href="{{ route('comedor.perfil') }}" class="dashboard-nav-link {{ request()->routeIs('comedor.perfil') ? 'active' : '' }}">
+            <span>⚙</span> Datos del comedor
+        </a>
+    @elseif ($slug === 'colaborador')
+        <a href="{{ route('colaborador.dashboard') }}" class="dashboard-nav-link {{ request()->routeIs('colaborador.dashboard') ? 'active' : '' }}">
+            <span>⌂</span> Mi panel
+        </a>
+        <a href="{{ route('colaborador.traslados.index') }}" class="dashboard-nav-link {{ request()->routeIs('colaborador.traslados.*') ? 'active' : '' }}">
+            <span>⇄</span> Traslados y rutas
+        </a>
+    @elseif ($slug === 'administrador')
+        <a href="{{ route('admin.dashboard') }}" class="dashboard-nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+            <span>⌂</span> Resumen general
+        </a>
+        <a href="{{ route('admin.usuarios.index') }}" class="dashboard-nav-link {{ request()->routeIs('admin.usuarios.*') ? 'active' : '' }}">
+            <span>♟</span> Usuarios y roles
+        </a>
+        <a href="{{ route('admin.traslados.index') }}" class="dashboard-nav-link {{ request()->routeIs('admin.traslados.*') ? 'active' : '' }}">
+            <span>⇄</span> Supervisar traslados
+        </a>
+    @endif
+</nav>
