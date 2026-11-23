@@ -2,85 +2,80 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Entrega;
+use App\Models\LoteAlimento;
+use App\Models\SolicitudRescate;
+use App\Services\AceptarSolicitudRescate;
+use App\Services\CrearTraslado;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class DonanteDashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $usuario = $request->user();
+        $userId = $request->user()->id;
 
-        // 1. Total de lotes publicados por el donante.
-        $totalLotes = DB::table('lotes_alimentos')
-            ->where('donor_id', $usuario->id)
+        $totalLotes = LoteAlimento::where('donor_id', $userId)->count();
+
+        $solicitudesPendientes = SolicitudRescate::whereHas('lote', fn($q) => $q->where('donor_id', $userId))
+            ->where('estado', 'pendiente')
             ->count();
 
-        // 2. Solicitudes pendientes recibidas.
-        $solicitudesPendientes = DB::table('solicitudes_rescate')
-            ->join(
-                'lotes_alimentos',
-                'solicitudes_rescate.lot_id',
-                '=',
-                'lotes_alimentos.id'
-            )
-            ->where('lotes_alimentos.donor_id', $usuario->id)
-            ->where('solicitudes_rescate.estado', 'pendiente')
+        $entregasCompletadas = Entrega::whereHas('traslado.solicitud.lote', fn($q) => $q->where('donor_id', $userId))
             ->count();
 
-        // 3. Entregas completadas.
-        $entregasCompletadas = DB::table('entregas')
-            ->join(
-                'traslados',
-                'entregas.traslado_id',
-                '=',
-                'traslados.id'
-            )
-            ->join(
-                'solicitudes_rescate',
-                'traslados.solicitud_id',
-                '=',
-                'solicitudes_rescate.id'
-            )
-            ->join(
-                'lotes_alimentos',
-                'solicitudes_rescate.lot_id',
-                '=',
-                'lotes_alimentos.id'
-            )
-            ->where('lotes_alimentos.donor_id', $usuario->id)
-            ->where('traslados.estado', 'entregado')
-            ->count();
+        $kgRescatados = Entrega::whereHas('traslado.solicitud.lote', fn($q) => $q->where('donor_id', $userId))
+            ->sum('cantidad_recibida_kg');
 
-        // 4. Kilogramos realmente recibidos.
-        $kgRescatados = DB::table('entregas')
-            ->join(
-                'traslados',
-                'entregas.traslado_id',
-                '=',
-                'traslados.id'
-            )
-            ->join(
-                'solicitudes_rescate',
-                'traslados.solicitud_id',
-                '=',
-                'solicitudes_rescate.id'
-            )
-            ->join(
-                'lotes_alimentos',
-                'solicitudes_rescate.lot_id',
-                '=',
-                'lotes_alimentos.id'
-            )
-            ->where('lotes_alimentos.donor_id', $usuario->id)
-            ->where('traslados.estado', 'entregado')
-            ->sum('entregas.cantidad_recibida_kg');
+        return view('dashboards.donante.index', compact(
+            'totalLotes',
+            'solicitudesPendientes',
+            'entregasCompletadas',
+            'kgRescatados'
+        ));
+    }
 
-        return view('dashboards.donante.index', [
-            'totalLotes' => $totalLotes,
-            'solicitudesPendientes' => $solicitudesPendientes,
-            'entregasCompletadas' => $entregasCompletadas,
-            'kgRescatados' => round((float) $kgRescatados, 2),
+    public function solicitudes(Request $request)
+    {
+        $solicitudes = SolicitudRescate::with(['lote', 'comedor', 'traslado.colaboradores'])
+            ->whereHas('lote', fn($q) => $q->where('donor_id', $request->user()->id))
+            ->latest()
+            ->paginate(10);
+
+        return view('dashboards.donante.solicitudes', compact('solicitudes'));
+    }
+
+    public function aceptarSolicitud(
+        Request $request,
+        SolicitudRescate $solicitud,
+        AceptarSolicitudRescate $aceptarService,
+        CrearTraslado $crearTrasladoService
+    ) {
+        try {
+            $aceptarService->ejecutar($solicitud->id, $request->user()->id);
+            // Crear automáticamente el traslado pendiente para que un colaborador lo tome
+            $crearTrasladoService->ejecutar($solicitud->id);
+
+            return back()->with('success', 'Solicitud aceptada y traslado programado para recojo.');
+        } catch (Throwable $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function rechazarSolicitud(Request $request, SolicitudRescate $solicitud)
+    {
+        abort_unless((int) $solicitud->lote->donor_id === $request->user()->id, 403);
+
+        if ($solicitud->estado !== 'pendiente') {
+            return back()->with('error', 'Solo se pueden rechazar solicitudes pendientes.');
+        }
+
+        $solicitud->update([
+            'estado' => 'rechazada',
+            'respondido_at' => now(),
         ]);
+
+        return back()->with('success', 'Solicitud rechazada.');
     }
 }
