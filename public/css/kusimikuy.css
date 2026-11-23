@@ -674,3 +674,59 @@ p {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* INDICADORES DE IMPACTO */
+
+.impact-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin-top: 65px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.impact-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 30px 20px;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.impact-stat:first-child {
+    padding-left: 0;
+}
+
+.impact-stat:last-child {
+    border-right: 0;
+}
+
+.stat-value {
+    color: var(--cream);
+    font-family: "DM Serif Display", Georgia, serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.2;
+}
+
+.stat-label {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.78rem;
+}
+
+@media (max-width: 700px) {
+    .impact-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .impact-stat:nth-child(2) {
+        border-right: 0;
+    }
+
+    .impact-stat:nth-child(3),
+    .impact-stat:nth-child(4) {
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .impact-stat:nth-child(3) {
+        padding-left: 0;
+    }
+}

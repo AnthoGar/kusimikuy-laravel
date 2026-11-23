@@ -204,22 +204,58 @@
 
 {{-- IMPACTO --}}
 <section class="section impact" id="impacto">
-    <div class="container impact-content">
+    <div class="container">
 
-        <div>
-            <span class="eyebrow">IMPACTO QUE SE PUEDE SEGUIR</span>
-            <h2>Compartir también alimenta el futuro.</h2>
-            <p>
-                Cada entrega confirmada representa una acción
-                concreta. En KusiMikuy queremos que el impacto
-                pueda medirse y consultarse con transparencia.
-            </p>
+        <div class="impact-content">
+            <div>
+                <span class="eyebrow">IMPACTO QUE SE PUEDE SEGUIR</span>
+
+                <h2>Compartir también alimenta el futuro.</h2>
+
+                <p>
+                    Cada entrega confirmada representa una acción
+                    concreta. Nuestro impacto se mide con datos
+                    reales y transparentes.
+                </p>
+            </div>
+
+            <div class="impact-visual">
+                <span class="impact-symbol">✳</span>
+                <strong>Conectamos alimentos, creamos impacto.</strong>
+                <small>Datos basados en entregas confirmadas.</small>
+            </div>
         </div>
 
-        <div class="impact-visual">
-            <span class="impact-symbol">✳</span>
-            <strong>Conectamos alimentos, creamos impacto.</strong>
-            <small>Datos basados en entregas confirmadas.</small>
+        <div class="impact-stats">
+
+            <article class="impact-stat">
+                <span class="stat-value">
+                    {{ number_format($impacto['kg_rescatados'], 2) }}
+                </span>
+                <span class="stat-label">Kilogramos rescatados</span>
+            </article>
+
+            <article class="impact-stat">
+                <span class="stat-value">
+                    {{ number_format($impacto['entregas_completadas']) }}
+                </span>
+                <span class="stat-label">Entregas completadas</span>
+            </article>
+
+            <article class="impact-stat">
+                <span class="stat-value">
+                    {{ number_format($impacto['comedores_beneficiados']) }}
+                </span>
+                <span class="stat-label">Comedores beneficiados</span>
+            </article>
+
+            <article class="impact-stat">
+                <span class="stat-value">
+                    {{ number_format($impacto['solicitudes_atendidas']) }}
+                </span>
+                <span class="stat-label">Solicitudes atendidas</span>
+            </article>
+
         </div>
 
     </div>
